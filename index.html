@@ -206,20 +206,20 @@
     <div class="pager"></div>
   </article>
 
-  <div class="inst" style="--top:.9fr;--bot:1fr;--cols:1.5fr 1fr">
+  <div class="inst" style="--top:1fr;--topmin:200px;--botrow:auto;--cols:1fr;--rows:auto auto">
     <div class="screen main">
       <div class="shead"><div class="what" id="c3what"></div><div class="set" id="c3set"></div></div>
       <div class="cvw" style="--h:240px"><canvas id="c3scope" role="img" aria-label="Motor responses at each stimulation site"></canvas></div>
     </div>
     <div class="lower">
       <div class="screen">
-        <div class="tablewrap"><table class="res" id="c3table"></table></div>
+        <div class="tablewrap keep"><table class="res" id="c3table"></table></div>
         <p class="legend" style="margin:4px 0 0">Latency and duration in ms, amplitude in mV, velocity in m/s. Red is outside normal limits.</p>
         <div class="verdict" id="c3verdict"></div>
       </div>
       <div class="screen">
         <p class="cap" style="margin-top:0">Axon velocities, m/s <span id="c3cvcap"></span></p>
-        <div class="cvw" style="--h:130px"><canvas id="c3swarm" role="img" aria-label="Conduction velocity of each axon compared with normal limits"></canvas></div>
+        <div class="cvw fixed" style="--h:125px"><canvas id="c3swarm" role="img" aria-label="Conduction velocity of each axon compared with normal limits"></canvas></div>
         <div class="legend"><span>slow<span class="ramp"></span>fast</span><span><i style="background:var(--grid2)"></i>lost</span><span><i style="border:1.5px solid var(--bad)"></i>blocked</span></div>
       </div>
     </div>

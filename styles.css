@@ -149,7 +149,7 @@ input[type=range]{width:100%;min-width:0;accent-color:var(--ink);height:18px;mar
 table.res{width:100%;border-collapse:collapse;font:12.5px/1.2 var(--f-ui);font-variant-numeric:tabular-nums}
 table.res th{font-weight:600;color:var(--ink3);text-align:right;padding:4px 4px;border-bottom:1px solid var(--rule);white-space:nowrap}
 table.res th:first-child,table.res td:first-child{text-align:left}
-table.res td{padding:4px 4px;text-align:right;border-bottom:1px solid var(--grid);white-space:nowrap}
+table.res td{padding:3px 4px;text-align:right;border-bottom:1px solid var(--grid);white-space:nowrap}
 table.res td.bad{color:var(--bad);font-weight:700}
 table.res tr.sub td{color:var(--ink2)}
 .tablewrap{overflow:auto;min-height:0}
@@ -187,14 +187,15 @@ table.res tr.sub td{color:var(--ink2)}
   .read>*{max-width:62ch}
   .inst{order:0;min-height:0;padding:14px 16px;display:grid;gap:10px;
     grid-template-columns:minmax(0,1fr) 250px;
-    grid-template-rows:minmax(0,var(--top,1.45fr)) minmax(0,var(--bot,1fr));
+    grid-template-rows:minmax(var(--topmin,0px),var(--top,1.45fr)) var(--botrow,minmax(0,var(--bot,1fr)));overflow-y:auto;
     grid-template-areas:"main side" "lower side"}
   .inst>.main{grid-area:main;min-height:0}
-  .inst>.lower{grid-area:lower;min-height:0;grid-template-columns:var(--cols,1fr 1fr);grid-template-rows:minmax(0,1fr)}
+  .inst>.lower{grid-area:lower;min-height:0;grid-template-columns:var(--cols,1fr 1fr);grid-template-rows:var(--rows,minmax(0,1fr))}
   .inst>.side{grid-area:side;overflow-y:auto;scrollbar-width:thin}
   .lower>.screen{min-height:0}
   .cvw{height:auto;flex:var(--f,1) 1 0;min-height:0}
-  .screen>.tablewrap{flex:1}
+  .cvw.fixed{flex:none;height:var(--h)}
+  .tablewrap.keep{flex:none;overflow:visible}
   .scroll{overflow:auto}
 }
 @media (max-width:640px){
