@@ -3,6 +3,7 @@
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const APP=matchMedia('(min-width:1061px) and (min-height:600px)');   // split-screen layout
 const F_UI='Archivo, system-ui, sans-serif';
 const font=(w,px)=>`${w} ${px}px ${F_UI}`;
 let COL={}, STOPS=[];
@@ -263,22 +264,21 @@ function draw3(){
     segs.push({name:`${rows[i-1].label} to ${rows[i].label.toLowerCase()}`,cv:segCv(a,b),
       drop:a.nr||b.nr?null:100*(1-b.amp/a.amp),dur:a.nr||b.nr?null:100*(b.dur/a.dur-1)});}
   const bad=c=>c?' class="bad"':'';
-  let html=`<tr><th>Motor</th><th>Latency</th><th>Amp</th><th>Duration</th><th>CV</th><th>Amp drop</th><th>Dur change</th></tr>`;
+  let html=`<tr><th>Motor</th><th>Latency</th><th>Amp</th><th>Dur</th><th>CV</th><th>Amp drop</th><th>Dur Δ</th></tr>`;
   rows.forEach(({R,label},i)=>{
-    html+=`<tr><td>${label}</td><td${bad(i===0&&!R.nr&&R.onset>n.dml)}>${R.nr?'NR':R.onset.toFixed(1)+' ms'}</td><td${bad(i===0&&R.amp<n.amp)}>${R.nr?'NR':fmtAmp(R.amp,'motor')+' mV'}</td><td>${R.nr?'—':R.dur.toFixed(1)+' ms'}</td><td></td><td></td><td></td></tr>`;
+    html+=`<tr><td>${label}</td><td${bad(i===0&&!R.nr&&R.onset>n.dml)}>${R.nr?'NR':R.onset.toFixed(1)}</td><td${bad(i===0&&R.amp<n.amp)}>${R.nr?'NR':fmtAmp(R.amp,'motor')}</td><td>${R.nr?'—':R.dur.toFixed(1)}</td><td></td><td></td><td></td></tr>`;
     if(i<rows.length-1){const s=segs[i];
-      html+=`<tr class="sub"><td>&nbsp;&nbsp;${s.name}</td><td></td><td></td><td></td><td${bad(s.cv!=null&&s.cv<n.cv)}>${s.cv==null?'—':s.cv.toFixed(0)+' m/s'}</td><td${bad(s.drop!=null&&s.drop>=30)}>${s.drop==null?'—':Math.max(0,s.drop).toFixed(0)+'%'}</td><td${bad(s.dur!=null&&s.dur>30)}>${s.dur==null?'—':(s.dur>=0?'+':'−')+Math.abs(s.dur).toFixed(0)+'%'}</td></tr>`;}
+      html+=`<tr class="sub"><td>&nbsp;&nbsp;${s.name}</td><td></td><td></td><td></td><td${bad(s.cv!=null&&s.cv<n.cv)}>${s.cv==null?'—':s.cv.toFixed(0)}</td><td${bad(s.drop!=null&&s.drop>=30)}>${s.drop==null?'—':Math.max(0,s.drop).toFixed(0)+'%'}</td><td${bad(s.dur!=null&&s.dur>30)}>${s.dur==null?'—':(s.dur>=0?'+':'−')+Math.abs(s.dur).toFixed(0)+'%'}</td></tr>`;}
   });
   const scv=sens.nr?null:ss[0].x/sens.onset;
   html+=`<tr><th>Sensory</th><th>Peak lat</th><th>Amp</th><th></th><th>CV</th><th></th><th></th></tr>
-    <tr><td>${nv.sensory.nerve||nv.name}, ${nv.sensory.rec}</td><td${bad(!sens.nr&&sens.peakLat>n.slat)}>${sens.nr?'NR':sens.peakLat.toFixed(1)+' ms'}</td><td${bad(sens.amp<n.samp)}>${sens.nr?'NR':sens.amp.toFixed(0)+' µV'}</td><td></td><td${bad(scv!=null&&scv<n.scv)}>${scv==null?'—':scv.toFixed(0)+' m/s'}</td><td></td><td></td></tr>`;
+    <tr><td>${nv.sensory.nerve||nv.name}, ${nv.sensory.rec}</td><td${bad(!sens.nr&&sens.peakLat>n.slat)}>${sens.nr?'NR':sens.peakLat.toFixed(1)}</td><td${bad(sens.amp<n.samp)}>${sens.nr?'NR':sens.amp.toFixed(0)+' µV'}</td><td></td><td${bad(scv!=null&&scv<n.scv)}>${scv==null?'—':scv.toFixed(0)}</td><td></td><td></td></tr>`;
   $('#c3table').innerHTML=html;
   $('#c3verdict').innerHTML=verdict(rows,segs,sens,scv,n);
 
   // velocity of every axon across the first segment
   {const {ctx,w,h}=fit($('#c3swarm'));const x0=10,x1=w-10,V=[0,75],sx=v=>x0+(v-V[0])/(V[1]-V[0])*(x1-x0),yb=h-18;
     for(let v=0;v<=75;v+=10){line(ctx,sx(v),4,sx(v),yb,COL.grid);text(ctx,v,sx(v),h-4,{c:COL.ink3,al:'center'});}
-    text(ctx,'m/s',x1,h-4,{c:COL.ink3,al:'right'});
     const pa=rows[0].R.parts,pb=rows[1]?.R.parts;const cols={};const dots=[];
     if(pb){const d=ms[1].x-ms[0].x,Dn=freshD();Dn.temp=D.temp;
       pa.forEach((p,i)=>{const q=pb[i];let v,st;
@@ -296,7 +296,7 @@ function draw3(){
     line(ctx,sx(lln*.7),4,sx(lln*.7),yb,COL.bad,1.2,[4,3]);text(ctx,'70%',sx(lln*.7)-4,14,{c:COL.bad,w:600,al:'right'});
     const cv=segs[0]?.cv;
     if(cv!=null){ctx.fillStyle=COL.ink;const X=sx(clamp(cv,0,75));ctx.beginPath();ctx.moveTo(X,yb+1);ctx.lineTo(X-5,yb+9);ctx.lineTo(X+5,yb+9);ctx.fill();}
-    $('#c3cvcap').textContent=cv!=null?`measured ${cv.toFixed(0)} m/s (▲), set by the fastest survivors`:'';
+    $('#c3cvcap').textContent=cv!=null?`measured ${cv.toFixed(0)} m/s ▲`:'no response';
   }
   // controls
   $$('#c3presets button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.c3.preset));
@@ -382,9 +382,9 @@ function runTrain(label,animate=true){
   if(animate&&!REDUCED){C5.shown=0;C5.busy=true;const tick=()=>{C5.shown++;draw5();if(C5.shown<10)C5.timer=setTimeout(tick,333);else{C5.busy=false;draw5();}};tick();}
   else{C5.shown=10;C5.busy=false;draw5();}
 }
-function exLabel(){if(!isFinite(C5.tEx))return 'At rest';if(C5.tEx===0)return 'Right after exercise';return `${C5.tEx/60} min after exercise`;}
+function exLabel(){if(!isFinite(C5.tEx))return 'Rest';if(C5.tEx===0)return 'Just after exercise';return `${C5.tEx/60} min after`;}
 function exercise(){clearTimeout(C5.timer);
-  if(!C5.log.some(l=>l.rest)){C5.tEx=Infinity;runTrain('At rest',false);}
+  if(!C5.log.some(l=>l.rest)){C5.tEx=Infinity;runTrain('Rest',false);}
   C5.tEx=0;C5.busy=true;C5.exercising=true;draw5();
   C5.timer=setTimeout(()=>{C5.exercising=false;runTrain(exLabel());},REDUCED?0:1100);}
 function wait1(){if(!isFinite(C5.tEx))return;C5.tEx+=60;runTrain(exLabel());}
@@ -441,8 +441,8 @@ function draw5(){
   $('#c5pool').innerHTML=T&&shown?`${Math.round(T[shown-1].pool*100)}<small>%</small>`:'100<small>%</small>';
   $('#c5clock').innerHTML=isFinite(C5.tEx)?`${C5.tEx}<small>s</small>`:'—';
   $('#c5logwrap').hidden=!C5.log.length;
-  $('#c5log').innerHTML=`<tr><th>When</th><th>First response</th><th>Decrement</th><th>vs rest</th></tr>`+
-    C5.log.map((l,i)=>{const live=i===C5.log.length-1&&!done;return `<tr><td>${l.label}</td><td>${fmtAmp(l.a1,'motor')} mV</td><td${!live&&l.dec>10?' class="bad"':''}>${live?'…':Math.max(0,l.dec).toFixed(0)+'%'}</td><td>${l.rest||l.vsRest==null?'—':(l.vsRest>=0?'+':'−')+Math.abs(l.vsRest).toFixed(0)+'%'}</td></tr>`;}).join('');
+  $('#c5log').innerHTML=`<tr><th>When</th><th>Amp</th><th>Decr.</th><th>vs rest</th></tr>`+
+    C5.log.map((l,i)=>{const live=i===C5.log.length-1&&!done;return `<tr><td>${l.label}</td><td>${fmtAmp(l.a1,'motor')}</td><td${!live&&l.dec>10?' class="bad"':''}>${live?'…':Math.max(0,l.dec).toFixed(0)+'%'}</td><td>${l.rest||l.vsRest==null?'—':(l.vsRest>=0?'+':'−')+Math.abs(l.vsRest).toFixed(0)+'%'}</td></tr>`;}).join('');
   $$('#c5presets button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===C5.preset));
   $('#c5run').disabled=C5.busy;$('#c5ex').disabled=C5.busy;$('#c5wait').disabled=C5.busy||!isFinite(C5.tEx);
 }
@@ -507,7 +507,6 @@ function draw6(){
   {const {ctx,w,h}=fit($('#c6strip'));const base=h/2,pxPer=(h/6)/C6.gain;
     for(let i=0;i<=10;i++)line(ctx,i*w/10,0,i*w/10,h,COL.grid);
     ctx.save();ctx.beginPath();ctx.rect(0,0,w,h);ctx.clip();traceMinMax(ctx,e-2,e,0,w,base,pxPer,COL.ink,1);ctx.restore();
-    text(ctx,'200 ms/div',w-4,12,{c:COL.ink3,al:'right'});
   }
   // firing rate
   {const {ctx,w,h}=fit($('#c6rate'));const x0=40,x1=w-6,y0=h-16,y1=6,W=6,L=[Math.log(.3),Math.log(400)];
@@ -569,10 +568,10 @@ const ACTIONS={
   'c3-mmn':()=>{applyPreset3('mmn');draw3();},
   'c3-length':()=>{applyPreset3('length');draw3();},
   'c5-train':()=>{if(C5.busy)return;runTrain(exLabel());},
-  'c5-mg':()=>{setPreset5('mgMod');runTrain('At rest');},
+  'c5-mg':()=>{setPreset5('mgMod');runTrain('Rest');},
   'c5-ex':()=>{if(C5.busy)return;exercise();},
   'c5-wait':()=>{if(C5.busy)return;if(!isFinite(C5.tEx)){exercise();return;}wait1();},
-  'c5-lems':()=>{setPreset5('lems');runTrain('At rest');},
+  'c5-lems':()=>{setPreset5('lems');runTrain('Rest');},
   'c5-lemsex':()=>{if(C5.preset!=='lems')setPreset5('lems');exercise();},
   'c6-sound':()=>setSound(true),
   'c6-endplate':()=>setPattern('endplate'),
@@ -586,7 +585,7 @@ $$('.act').forEach(b=>b.addEventListener('click',()=>{
   const f=ACTIONS[b.dataset.act];if(!f)return;f();
   b.classList.remove('fired');void b.offsetWidth;b.classList.add('fired');
   const inst=b.closest('.chapter').querySelector('.inst'),r=inst.getBoundingClientRect();
-  if(r.bottom<80||r.top>innerHeight-120)inst.scrollIntoView({behavior:REDUCED?'auto':'smooth',block:'start'});
+  if(!APP.matches&&(r.top<0||r.top>innerHeight-120))inst.scrollIntoView({behavior:REDUCED?'auto':'smooth',block:'start'});
 }));
 
 /* ═══════════ navigation ═══════════ */
@@ -598,7 +597,7 @@ function go(n){
   $$('.chapter').forEach(s=>s.hidden=+s.dataset.ch!==n);
   $$('nav button').forEach(b=>b.setAttribute('aria-current',+b.dataset.go===n));
   try{history.replaceState(null,'','#ch'+n);}catch(e){}
-  window.scrollTo({top:0});
+  window.scrollTo({top:0});$$('.read').forEach(r=>r.scrollTop=0);
   if(n===6&&!C6.buf)setPattern(C6.pat);
   redraw();if(n===6)loop6();
 }
@@ -616,7 +615,8 @@ try{const t=localStorage.getItem('summation-theme');if(t)document.documentElemen
 $('#themeBtn').onclick=()=>{const r=document.documentElement,dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
   r.dataset.theme=dark?'light':'dark';try{localStorage.setItem('summation-theme',r.dataset.theme);}catch(e){}readColors();redraw();};
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{readColors();redraw();});
-new ResizeObserver(()=>redraw()).observe($('main'));
+let rz=0;const ro=new ResizeObserver(()=>{cancelAnimationFrame(rz);rz=requestAnimationFrame(redraw);});
+$$('.cvw').forEach(el=>ro.observe(el));
 new ResizeObserver(()=>document.documentElement.style.setProperty('--hdr',$('.top').offsetHeight+'px')).observe($('.top'));
 readColors();renderNerveSegs();renderNorms();
 const start=+(location.hash.match(/ch(\d)/)||[])[1]||1;

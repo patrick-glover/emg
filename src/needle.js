@@ -39,7 +39,7 @@ const PATTERNS={
   fib:{name:'Fibrillation potentials',short:'Denervation',gain:50,
     gen:'A single muscle fibre that has lost its nerve supply, firing on its own.',
     looks:'Brief spikes, 1–5 ms, 20–200 µV, initial positive (downward) deflection.',
-    rhythm:'Regular, 0.5–15 Hz. Each fibre keeps its own clock.',sound:'Rain on a tin roof, or a clock ticking',
+    rhythm:'Regular, 0.5–15 Hz. Each fibre fires at its own steady rate.',sound:'Rain on a tin roof, or a clock ticking',
     where:'Denervation (appears 1–4 weeks after axon loss, earliest in proximal muscles); also necrotic or inflammatory myopathy.',insert:'increased',
     events(rng){const E=[];const n=4;for(let k=0;k<n;k++){const hz=[2.2,5.5,8.3,11.6][k]*(.9+.2*rng()),a=[140,70,105,50][k];
       for(let t=rng()/hz;t<NLOOP;t+=1/hz*(1+.012*(rng()-.5)))E.push({t,id:k,a,f:SHAPES.fib,len:3});}return E;}},
