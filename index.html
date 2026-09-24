@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Summation: an EMG primer</title>
+<meta name="description" content="An interactive primer on nerve conduction studies and EMG. Every waveform is built from a simulated crowd of motor units, so you can see why the numbers come out the way they do.">
+<meta property="og:title" content="Summation: an EMG primer">
+<meta property="og:description" content="Nerve conduction and EMG, built up from individual motor units. Stimulate, lesion, and listen.">
+<meta property="og:url" content="https://patrickglover.io/emg/">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,200..800&family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400..600&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="bar">
+    <a class="brand" href="#ch1"><span class="word">Summation</span><span class="sub">an EMG primer</span></a>
+    <nav aria-label="Chapters">
+      <button data-go="1"><b>1</b>Summation</button>
+      <button data-go="2"><b>2</b>Dispersion</button>
+      <button data-go="3"><b>3</b>Lesions</button>
+      <button data-go="4" disabled><b>4</b>F-waves</button>
+      <button data-go="5"><b>5</b>Junction</button>
+      <button data-go="6"><b>6</b>At rest</button>
+      <button data-go="7" disabled><b>7</b>Recruitment</button>
+      <button data-go="8" disabled><b>8</b>Cases</button>
+    </nav>
+    <button class="theme" id="themeBtn" aria-label="Switch light or dark theme">◐</button>
+  </div>
+</header>
+
+<main>
+
+<!-- ═════════════════════════ 1 · SUMMATION ═════════════════════════ -->
+<section class="chapter" id="ch1" data-ch="1">
+  <article class="read">
+    <span class="num" aria-hidden="true">1</span>
+    <h2>A CMAP is a crowd</h2>
+    <p class="lede">Stimulate the median nerve at the wrist and record over the thumb, and one smooth waveform appears. It looks like a single signal. It is actually around two hundred motor units, each firing its own small potential, landing within a few milliseconds of each other.</p>
+    <p>Each coloured band on the screen is one motor unit. Colour is the axon's conduction velocity: amber for the slowest, blue for the fastest. The black line on top is their sum, the compound muscle action potential.</p>
+
+    <h3>Recruit them one at a time</h3>
+    <p>Start by <button class="act" data-act="c1-one">stimulating a single axon</button>. Only one fibre reaches threshold, and its motor unit is tiny next to the full response. Now <button class="act" data-act="c1-ramp">sweep the current up slowly</button> and watch the crowd assemble.</p>
+    <p>Notice the order. The first units to join are blue. Large, fast axons have the lowest threshold to an electrical shock, so an electrical stimulus recruits them first. That is the reverse of voluntary contraction, where small units fire first.</p>
+
+    <h3>Supramaximal, or it doesn't count</h3>
+    <p>Amplitude stops growing once every axon is firing. Labs push roughly 20% past that point so the response cannot get any bigger. A <button class="act" data-act="c1-sub">submaximal stimulus</button> gives a small CMAP that looks exactly like axon loss. If you can't reach a plateau, suspect the stimulus before you blame the nerve.</p>
+
+    <h3>What each number measures</h3>
+    <p><b>Amplitude</b> is roughly how many motor units arrive and how big they are. <b>Latency</b> is timed from the first deflection, which is set by the handful of fastest axons. You can see this in the timeline under the trace. The onset marker sits on the leading blue units, not the average.</p>
+    <p>Try <button class="act" data-act="c1-crowd">turning off the crowd view</button> to see the tracing a lab would show you, then <button class="act" data-act="c1-crowdon">turn it back on</button>.</p>
+
+    <details class="deep"><summary>Why can't you get a velocity from one stimulus site?</summary><div class="body">
+      <p>Distal motor latency includes more than nerve conduction. It includes slowing through the fine terminal branches, about 1 ms of neuromuscular transmission, and the time for muscle fibres to depolarise under the electrode. That extra delay is the residual latency.</p>
+      <p>Stimulating at two sites and subtracting the latencies cancels everything the two paths share. What's left is the time to travel the segment between them. Conduction velocity is that distance divided by that time.</p>
+      <p>Sensory studies have no synapse, so a single site gives a velocity directly.</p>
+    </div></details>
+    <details class="deep"><summary>Why do demyelinated nerves need more current?</summary><div class="body">
+      <p>Thin, damaged myelin raises the threshold of the stimulated segment. In CIDP and CMT1A you may need 50–100 mA, or a longer pulse, to reach supramaximal. A falsely small proximal response from an under-stimulated deep site can mimic conduction block.</p>
+      <p>This simulator scales each axon's threshold with how demyelinated it is at the stimulation site. Chapter 3 lets you see that.</p>
+    </div></details>
+    <details class="deep"><summary>Amplitude or area?</summary><div class="body">
+      <p>Negative-peak area adds up the whole negative phase, so it holds up better against changes in shape than amplitude does. Many criteria for conduction block are written in terms of area for that reason. Amplitude is easier to measure and is the number most reports lead with.</p>
+    </div></details>
+
+    <table class="norms" id="norms1"></table>
+    <div class="pager"></div>
+  </article>
+
+  <div class="inst">
+    <div class="screen">
+      <div class="shead"><div class="what" id="c1what"></div><div class="set" id="c1set"></div></div>
+      <canvas id="c1scope" class="h-scope" role="img" aria-label="CMAP built from individual motor unit potentials"></canvas>
+      <p class="cap">When each axon arrives <span>one dot per axon</span></p>
+      <canvas id="c1raster" class="h-raster" role="img" aria-label="Arrival time of each axon, sorted by conduction velocity"></canvas>
+      <div class="legend"><span>slow<span class="ramp"></span>fast</span><span><i style="border:1.5px solid var(--ink3)"></i>not stimulated</span></div>
+    </div>
+    <div class="split">
+      <div class="screen"><p class="cap">Stimulus–response <span>amplitude vs current</span></p><canvas id="c1sr" class="h-mini"></canvas></div>
+      <div class="screen" style="display:flex;flex-direction:column;justify-content:center">
+        <div class="readouts">
+          <div class="ro"><span class="k">Axons fired</span><span class="v" id="c1n"></span></div>
+          <div class="ro"><span class="k">Amplitude</span><span class="v" id="c1amp"></span></div>
+          <div class="ro"><span class="k">Onset latency</span><span class="v" id="c1lat"></span></div>
+          <div class="ro"><span class="k">Stimulus</span><span class="v" id="c1state" style="font-size:16px"></span></div>
+        </div>
+      </div>
+    </div>
+    <div class="tray">
+      <div class="trow"><span class="tlabel">Nerve</span><div class="seg" data-nerve-seg></div><span class="tlabel">Site</span><div class="seg" id="c1sites"></div></div>
+      <div class="trow">
+        <div class="ctl"><label for="c1mA">Current</label><input type="range" id="c1mA" min="0" max="45" step="0.1"><output id="c1mAo"></output></div>
+        <label class="toggle"><input type="checkbox" id="c1crowd" checked>Crowd view</label>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════════════ 2 · DISPERSION ═════════════════════════ -->
+<section class="chapter" id="ch2" data-ch="2" hidden>
+  <article class="read">
+    <span class="num" aria-hidden="true">2</span>
+    <h2>Distance spreads the crowd</h2>
+    <p class="lede">Every axon has its own speed. Over the few centimetres from wrist to thumb, fast and slow axons arrive almost together. Over half a metre from the axilla, the stragglers fall several milliseconds behind the leaders.</p>
+    <p>The screen shows the same nerve stimulated at each site. Watch the colours fan out from wrist to elbow to axilla. The fast blue units pull ahead and the amber ones trail.</p>
+
+    <h3>Spreading out means cancelling out</h3>
+    <p>A motor unit potential goes negative (up) first, then positive (down). Once units drift apart in time, the downward tail of an early unit lands on the upward peak of a later one, and they subtract. This is <em>phase cancellation</em>. The CMAP gets lower and longer even though every single axon conducted.</p>
+    <p>The small panel shows just two units. <button class="act" data-act="c2-offset">Offset them by 3 ms</button> and their sum barely exceeds one unit alone. <button class="act" data-act="c2-offset6">Push it to 5 ms</button> and the second unit's peak falls into the first unit's trough.</p>
+
+    <h3>Sensory potentials are more fragile</h3>
+    <p><button class="act" data-act="c2-sensory">Switch to the sensory study</button>. A single sensory fibre's potential lasts about a millisecond, not eight. The same timing spread that barely dents a CMAP is enough to cancel much of a SNAP. A normal SNAP can lose half its amplitude between wrist and elbow while the CMAP loses about 10–15%. The distance plot shows both curves.</p>
+
+    <h3>What demyelination adds</h3>
+    <p>Acquired demyelination slows some fibres far more than others, so the spread widens. <button class="act" data-act="c2-wide">Widen the velocity spread</button> and watch the proximal CMAP flatten and stretch. That's abnormal <em>temporal dispersion</em>. No axon is blocked, yet amplitude falls. It can mimic conduction block.</p>
+    <p>Then <button class="act" data-act="c2-reset">put it back to normal</button>.</p>
+
+    <details class="deep"><summary>Block or dispersion: duration is the tell</summary><div class="body">
+      <p>Conduction block removes units, so amplitude and area fall while the potential keeps its duration. Dispersion keeps every unit but smears them out, so amplitude falls and duration grows.</p>
+      <p>Criteria therefore pair an amplitude or area drop with a duration limit. For multifocal motor neuropathy, definite block needs at least a 50% fall in negative-peak area with no more than a 30% rise in duration. The 2021 EAN/PNS CIDP guideline accepts a 30% amplitude fall, and calls a duration increase over 30% abnormal temporal dispersion.</p>
+      <p class="ref">Check the current guideline before using a number clinically. Cut-offs differ for tibial nerves and very long segments.</p>
+    </div></details>
+    <details class="deep"><summary>Temperature changes everything here</summary><div class="body">
+      <p>Cooling slows conduction by roughly 1.5–2 m/s per °C and prolongs sodium channel opening. Cold nerves therefore give slower velocities but larger, longer potentials. Warm the limb to at least 32 °C at the hand or 30 °C at the foot before calling anything slow. The temperature control is in chapter 3.</p>
+    </div></details>
+    <details class="deep"><summary>Why stimulate so far away at all?</summary><div class="body">
+      <p>Proximal segments (elbow, axilla, Erb's point, and via F-waves the roots) are where acquired demyelination often hides. A study that only stimulates at the wrist and elbow can miss a block in the upper arm. The price of looking there is more dispersion, a deeper nerve that is harder to stimulate, and less certain distance measurements.</p>
+    </div></details>
+    <div class="pager"></div>
+  </article>
+
+  <div class="inst">
+    <div class="screen">
+      <div class="shead"><div class="what" id="c2what"></div><div class="set" id="c2set"></div></div>
+      <canvas id="c2scope" class="h-scope" role="img" aria-label="Responses at each stimulation site"></canvas>
+      <div class="readouts" style="margin-top:6px">
+        <div class="ro"><span class="k">Proximal vs distal amplitude</span><span class="v" id="c2drop"></span></div>
+        <div class="ro"><span class="k">Duration change</span><span class="v" id="c2dur"></span></div>
+      </div>
+    </div>
+    <div class="split">
+      <div class="screen"><p class="cap">Amplitude vs distance <span>% of closest site, by cm from recording</span></p><canvas id="c2dist" class="h-mini"></canvas>
+        <div class="legend"><span><i style="background:var(--ink)"></i>CMAP</span><span><i style="background:var(--mid1)"></i>SNAP</span></div></div>
+      <div class="screen"><p class="cap">Two units <span id="c2pair"></span></p><canvas id="c2two" class="h-mini"></canvas></div>
+    </div>
+    <div class="tray">
+      <div class="trow"><span class="tlabel">Nerve</span><div class="seg" data-nerve-seg></div><span class="tlabel">Study</span><div class="seg" id="c2mod"><button data-v="motor">Motor</button><button data-v="sensory">Sensory</button></div></div>
+      <div class="trow">
+        <div class="ctl"><label for="c2spread">Velocity spread</label><input type="range" id="c2spread" min="0.2" max="3.5" step="0.05"><output id="c2spreado"></output></div>
+        <div class="ctl"><label for="c2dt">Two-unit offset</label><input type="range" id="c2dt" min="0" max="8" step="0.05"><output id="c2dto"></output></div>
+      </div>
+      <div class="trow"><label class="toggle"><input type="checkbox" id="c2crowd" checked>Crowd view</label></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════════════ 3 · LESIONS ═════════════════════════ -->
+<section class="chapter" id="ch3" data-ch="3" hidden>
+  <article class="read">
+    <span class="num" aria-hidden="true">3</span>
+    <h2>Lose axons or slow them</h2>
+    <p class="lede">Nerve disease does two basic things. It kills axons, or it strips their myelin. Nearly every conduction study is an argument about which one happened and where.</p>
+
+    <h3>Axon loss takes units away</h3>
+    <p><button class="act" data-act="c3-axonal">Remove 70% of axons at random</button>. Amplitude falls in proportion at every site. Latencies and velocity barely move, because the fast axons that set the onset are still there. The dot plot below the table shows each axon's forearm velocity. Dead axons fade to grey.</p>
+
+    <h3>The 75% line</h3>
+    <p>What if disease picks off the fastest axons first? <button class="act" data-act="c3-largest">Kill the fastest 90%</button>. Velocity now drops, because the measurement reports the fastest <em>survivors</em>. But the slowest healthy motor axons still conduct at around 35 m/s. However hard you push, axon loss alone can't take velocity much below 70–80% of the lower limit of normal before the response disappears altogether.</p>
+    <p>That is where demyelinating cut-offs such as "velocity under 70% of the lower limit" come from. A value past that line needs slowed axons, not just fewer of them.</p>
+
+    <h3>Uniform versus patchy</h3>
+    <p><button class="act" data-act="c3-cmt">Inherited demyelination (CMT1A)</button> slows every fibre by about the same amount. Velocity is very slow, yet the potential keeps its shape. There is no block and little dispersion, because the crowd moves together. <button class="act" data-act="c3-cidp">Acquired demyelination (CIDP)</button> is patchy. Different fibres are hit in different places, so the proximal response spreads out and some fibres block altogether.</p>
+    <p>Uniform slowing points to a genetic cause, and patchy slowing with dispersion or block points to an acquired immune one. This single distinction changes the whole workup.</p>
+
+    <h3>Focal lesions</h3>
+    <p><button class="act" data-act="c3-entrap">An entrapment</button> slows conduction only across the squeezed segment. For the median nerve that segment is the carpal tunnel, which lies between the wrist stimulus and the thumb, so the distal latency lengthens and the forearm velocity stays normal. The sensory study, which crosses the same tunnel over a longer path, is usually abnormal first. <button class="act" data-act="c3-mmn">Multifocal motor neuropathy</button> blocks motor fibres in a forearm segment. The distal response is normal, the proximal one is lost, and its duration hardly changes. Sensory conduction is spared.</p>
+    <p>Finally, <button class="act" data-act="c3-length">a length-dependent axonal neuropathy</button>, the diabetic pattern. Switch between nerves and compare. The longest nerves go first, so the sural response vanishes while the median is merely low.</p>
+
+    <details class="deep"><summary>Demyelinating criteria, briefly</summary><div class="body">
+      <p>The 2021 EAN/PNS CIDP guideline counts findings in at least two nerves, including:</p>
+      <p>Distal motor latency ≥50% above the upper limit (not counting the median at the wrist, where carpal tunnel confounds it). Conduction velocity ≥30% below the lower limit. F-wave latency ≥20% above the upper limit (≥50% if the distal CMAP is under 80% of the lower limit). Conduction block of ≥30%. Temporal dispersion over 30%.</p>
+      <p>Loosening the thresholds when amplitude is low is the same idea as the 75% line. Severe axon loss slows a nerve by itself.</p>
+      <p class="ref">Summarised from Van den Bergh et al., J Peripher Nerv Syst 2021. Confirm details against the source before clinical use.</p>
+    </div></details>
+    <details class="deep"><summary>A normal SNAP in a numb limb localises the lesion</summary><div class="body">
+      <p>Sensory cell bodies sit in the dorsal root ganglion, outside the spinal canal. A lesion proximal to the ganglion (a root, the cord, a motor neuron disease) leaves the peripheral sensory axon attached to its cell body, so the SNAP stays normal even when the patient can't feel the finger. Low motor responses with normal SNAPs point to root, anterior horn cell or junction. Lost SNAPs put the lesion at or beyond the ganglion: plexus, nerve or neuronopathy.</p>
+    </div></details>
+    <details class="deep"><summary>Timing: an acute axonal injury can look like a block</summary><div class="body">
+      <p>After an axon is cut, the distal stump keeps conducting until Wallerian degeneration reaches it. Distal motor responses fall over about 3–9 days, and sensory responses a little later. In the first days, stimulating below the injury gives a normal response while stimulating above gives nothing. That looks exactly like conduction block. Repeat the study after about 10 days before calling it demyelinating.</p>
+    </div></details>
+    <details class="deep"><summary>Guillain–Barré: sural sparing</summary><div class="body">
+      <p>In early AIDP the median and ulnar SNAPs are often abnormal while the sural is normal. That's the opposite of a length-dependent neuropathy and a useful early clue. The very distal nerve terminals and the roots, which lack a complete blood–nerve barrier, are hit first. This simulator doesn't model sural sparing; it treats demyelination evenly along the nerve.</p>
+    </div></details>
+
+    <table class="norms" id="norms3"></table>
+    <div class="pager"></div>
+  </article>
+
+  <div class="inst">
+    <div class="screen">
+      <div class="shead"><div class="what" id="c3what"></div><div class="set" id="c3set"></div></div>
+      <canvas id="c3scope" class="h-scope-s" role="img" aria-label="Motor responses at each stimulation site"></canvas>
+      <div class="tablewrap" style="margin-top:8px"><table class="res" id="c3table"></table></div>
+      <div class="verdict" id="c3verdict" style="margin-top:10px"></div>
+    </div>
+    <div class="screen">
+      <p class="cap">Every axon's forearm velocity <span id="c3cvcap"></span></p>
+      <canvas id="c3swarm" class="h-raster" role="img" aria-label="Conduction velocity of each axon compared with normal limits"></canvas>
+      <div class="legend"><span>normal speed: slow<span class="ramp"></span>fast</span><span><i style="background:var(--grid2)"></i>lost</span><span><i style="border:1.5px solid var(--bad)"></i>blocked</span></div>
+    </div>
+    <div class="tray">
+      <div class="trow"><span class="tlabel">Nerve</span><div class="seg" data-nerve-seg></div><label class="toggle"><input type="checkbox" id="c3crowd">Crowd view</label></div>
+      <div class="trow"><div class="seg" id="c3presets"></div></div>
+      <div class="trow">
+        <div class="ctl"><label for="c3loss">Axon loss</label><input type="range" id="c3loss" min="0" max="1" step="0.01"><output id="c3losso"></output></div>
+        <label class="toggle"><input type="checkbox" id="c3largest">Fastest first</label>
+      </div>
+      <div class="trow">
+        <div class="ctl"><label for="c3demy">Diffuse slowing</label><input type="range" id="c3demy" min="0" max="0.75" step="0.01"><output id="c3demyo"></output></div>
+        <div class="ctl"><label for="c3patch">Patchiness</label><input type="range" id="c3patch" min="0" max="1" step="0.01"><output id="c3patcho"></output></div>
+      </div>
+      <div class="trow">
+        <div class="ctl"><label for="c3dblock">Scattered block</label><input type="range" id="c3dblock" min="0" max="1" step="0.01"><output id="c3dblocko"></output></div>
+        <div class="ctl"><label for="c3temp">Limb temp</label><input type="range" id="c3temp" min="24" max="36" step="0.5"><output id="c3tempo"></output></div>
+      </div>
+      <div class="trow"><span class="tlabel">Focal lesion</span><div class="seg" id="c3focal"><button data-v="none">None</button><button data-v="entrap">Entrapment site</button><button data-v="mid">Mid-segment</button></div>
+        <label class="toggle"><input type="checkbox" id="c3motoronly">Motor fibres only</label></div>
+      <div class="trow" id="c3focalCtl">
+        <div class="ctl"><label for="c3fslow">Focal slowing</label><input type="range" id="c3fslow" min="0" max="0.95" step="0.01"><output id="c3fslowo"></output></div>
+        <div class="ctl"><label for="c3fblock">Focal block</label><input type="range" id="c3fblock" min="0" max="1" step="0.01"><output id="c3fblocko"></output></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════════════ 5 · JUNCTION ═════════════════════════ -->
+<section class="chapter" id="ch5" data-ch="5" hidden>
+  <article class="read">
+    <span class="num" aria-hidden="true">5</span>
+    <h2>The junction's safety margin</h2>
+    <p class="lede">Every nerve impulse releases a packet of acetylcholine and produces an endplate potential in the muscle fibre. Normally that potential is three to four times bigger than it needs to be. The surplus is the safety factor, and it's why healthy muscle doesn't fatigue at the junction.</p>
+    <p>The dot plot on the right shows every endplate. Its height is the endplate potential divided by what the fibre needs to fire. Anything above the line fires. Anything below it fails, and that motor unit drops out of the CMAP.</p>
+
+    <h3>Why a 3 Hz train</h3>
+    <p><button class="act" data-act="c5-train">Deliver ten stimuli at 3 Hz</button>. Each stimulus releases a fraction of the ready-to-go vesicles, and the store can't refill between shocks. So release falls for the first four or five stimuli, then partly recovers as reserve vesicles are mobilised. In a normal junction, the whole cloud sinks but stays above the line. No fibre fails, and the CMAP doesn't change.</p>
+
+    <h3>Myasthenia gravis</h3>
+    <p>Antibodies destroy acetylcholine receptors, so each packet produces a smaller endplate potential. <button class="act" data-act="c5-mg">Switch to moderate MG and run a train</button>. Now many endplates sit just above the line. As release falls, they cross it one by one, which gives a decrement that is deepest at the fourth or fifth response and then flattens or eases. More than 10% is abnormal.</p>
+    <p><button class="act" data-act="c5-ex">Have the patient contract for 10 seconds</button>. Calcium left in the nerve terminal boosts release for about a minute, and the decrement shrinks or vanishes (repair). Then <button class="act" data-act="c5-wait">wait a minute and repeat</button>, a few times. Between two and four minutes the junction is transiently worse than baseline. That's postactivation exhaustion, and it can reveal a borderline decrement.</p>
+
+    <h3>Lambert–Eaton</h3>
+    <p>Here the target is the presynaptic calcium channel. Receptors are fine, but far too few packets are released. <button class="act" data-act="c5-lems">Switch to LEMS</button>. At rest most endplates fail, so the very first CMAP is already small. That's a clue on routine nerve conduction studies, before any RNS is done. <button class="act" data-act="c5-lemsex">Exercise for 10 seconds</button>: the calcium boost lifts most endplates over the line at once, and the CMAP more than doubles.</p>
+    <p>A normal junction can't do this. Every fibre already fires, so extra release has nothing left to recruit. The same boost gives a huge increment in LEMS, a repaired decrement in MG, and nothing at all in health.</p>
+
+    <details class="deep"><summary>Why not stimulate faster?</summary><div class="body">
+      <p>Two things compete at the terminal. Residual calcium facilitates release but clears within about 100–200 ms. Vesicle depletion lasts longer. At 2–3 Hz, facilitation is gone before the next shock, so pure depletion is exposed. At 20–50 Hz, facilitation dominates, which is why fast rates are used to look for an increment. They hurt, though, and 10 seconds of maximal voluntary contraction does the same job.</p>
+    </div></details>
+    <details class="deep"><summary>Increment thresholds</summary><div class="body">
+      <p>An increment of 100% or more after brief exercise is the classic LEMS finding. A threshold of 60% has been proposed with high specificity and better sensitivity. Mild increments (under 40%) can occur in MG and in normal people, partly from pseudofacilitation as units fire more synchronously.</p>
+      <p class="ref">Oh et al., Muscle Nerve 2005.</p>
+    </div></details>
+    <details class="deep"><summary>Getting a real decrement</summary><div class="body">
+      <p>Warm the limb, since cold improves neuromuscular transmission and hides a decrement (the idea behind the ice-pack test). Hold pyridostigmine for about 12 hours if safe. Immobilise the limb, because movement artifact looks like decrement. Test a weak muscle, and a proximal or facial one if distal studies are normal. Single-fibre EMG is the most sensitive test of all: it measures the jitter in how long each endplate takes to reach threshold.</p>
+    </div></details>
+    <div class="pager"></div>
+  </article>
+
+  <div class="inst">
+    <div class="screen">
+      <div class="shead"><div class="what" id="c5what"></div><div class="set" id="c5set"></div></div>
+      <canvas id="c5scope" class="h-scope-s" role="img" aria-label="Ten CMAPs from a 3 Hz train"></canvas>
+      <div class="readouts" style="margin-top:8px">
+        <div class="ro"><span class="k">First response</span><span class="v" id="c5a1"></span></div>
+        <div class="ro"><span class="k">Decrement</span><span class="v" id="c5dec"></span></div>
+        <div class="ro"><span class="k">Change from rest</span><span class="v" id="c5inc"></span></div>
+        <div class="ro"><span class="k">Ready vesicles</span><span class="v" id="c5pool"></span></div>
+        <div class="ro"><span class="k">Time since exercise</span><span class="v" id="c5clock"></span></div>
+      </div>
+    </div>
+    <div class="split s-3-2">
+      <div class="screen"><p class="cap">Every endplate <span>endplate potential ÷ threshold</span></p><canvas id="c5epp" class="h-mini"></canvas>
+        <div class="legend"><span>fired: slow<span class="ramp"></span>fast unit</span><span><i style="border:1.5px solid var(--bad)"></i>failed</span></div></div>
+      <div class="screen"><p class="cap">Amplitude through the train <span>% of first</span></p><canvas id="c5bars" class="h-mini"></canvas></div>
+    </div>
+    <div class="screen" id="c5logwrap"><p class="cap">Protocol log</p><div class="tablewrap"><table class="res" id="c5log"></table></div></div>
+    <div class="tray">
+      <div class="trow"><span class="tlabel">Junction</span><div class="seg" id="c5presets"></div></div>
+      <div class="trow">
+        <button class="btn primary" id="c5run">Run 3 Hz train</button>
+        <button class="btn" id="c5ex">Exercise 10 s</button>
+        <button class="btn" id="c5wait">Wait 1 min</button>
+        <button class="btn" id="c5reset">Start over</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════════════ 6 · AT REST ═════════════════════════ -->
+<section class="chapter" id="ch6" data-ch="6" hidden>
+  <article class="read">
+    <span class="num" aria-hidden="true">6</span>
+    <h2>Listen to a resting muscle</h2>
+    <p class="lede">With a needle electrode in a relaxed muscle, you mostly listen. A healthy muscle goes quiet a moment after the needle stops moving. Anything that keeps firing tells you what generated it: a single muscle fibre, a whole motor unit, or a group of fibres driving each other.</p>
+    <p><button class="act" data-act="c6-sound">Turn the sound on</button>. The speaker plays the same signal the screen draws. Headphones help.</p>
+
+    <h3>Three questions for every discharge</h3>
+    <p><b>How big and how long?</b> Tiny, brief spikes (tens of microvolts, a few milliseconds) come from one muscle fibre. Potentials the size of a motor unit (hundreds of microvolts to millivolts, around 10 ms) come from a whole unit.</p>
+    <p><b>Which way does it start?</b> Fibrillations and positive waves start with a downward (positive) deflection. Endplate spikes start upward.</p>
+    <p><b>What's the rhythm?</b> The firing-rate plot is often the fastest way to tell discharges apart. Each dot is one discharge, plotted by how soon it followed the previous one from the same source. Regular sources draw flat lines, irregular ones scatter, and myotonia draws a rising and falling arc.</p>
+
+    <h3>A tour</h3>
+    <p>Start with <button class="act" data-act="c6-endplate">the endplate zone</button>, a normal finding that fools beginners. Its spikes are irregular and start upward. Compare <button class="act" data-act="c6-fib">fibrillations</button>: regular, starting downward, each fibre ticking at its own rate. <button class="act" data-act="c6-psw">Positive sharp waves</button> are the same denervated fibres seen from an injured spot. Then <button class="act" data-act="c6-fasc">fasciculations</button>, whole motor units firing at random. Finally, <button class="act" data-act="c6-myo">myotonic discharges</button>, the easiest sound in EMG to recognise.</p>
+    <p>Try <button class="act" data-act="c6-move">moving the needle</button> in each muscle. Denervated muscle keeps firing after the needle stops (increased insertional activity), and myotonic muscle sets off a run.</p>
+    <p>When you have heard them all, press <b>Mystery</b> and name the discharge by ear.</p>
+
+    <details class="deep"><summary>When do fibrillations appear?</summary><div class="body">
+      <p>Fibrillations need the muscle fibre to be disconnected from its axon, and that takes time. They usually appear 1–2 weeks after injury in paraspinal muscles, and 3–4 weeks in distal limb muscles. Before that, a needle study can be normal despite a severe acute lesion. They fade as the fibres reinnervate, or as they atrophy and fibrose many months later.</p>
+    </div></details>
+    <details class="deep"><summary>Grading fibrillations</summary><div class="body">
+      <p>A common scale: <b>1+</b> persistent single runs in at least two areas; <b>2+</b> moderate numbers in three or more areas; <b>3+</b> many in all areas; <b>4+</b> filling the baseline. The grade roughly tracks how much of the muscle is denervated, not how long ago it happened.</p>
+    </div></details>
+    <details class="deep"><summary>Fasciculations need company</summary><div class="body">
+      <p>Fasciculations alone are common and usually benign, especially in the calves. In motor neuron disease they come with active denervation (fibrillations and positive waves) and chronic reinnervation (large, long motor units that fire fast because there are too few of them) across several body regions. Revised El Escorial and Awaji criteria treat fasciculations as evidence of denervation when chronic neurogenic changes are present in the same muscle.</p>
+    </div></details>
+    <div class="pager"></div>
+  </article>
+
+  <div class="inst">
+    <div class="screen">
+      <div class="shead"><div class="what" id="c6what"></div><div class="set" id="c6set"></div></div>
+      <canvas id="c6sweep" class="h-scope-s" role="img" aria-label="Needle EMG sweep"></canvas>
+      <p class="cap" style="margin-top:8px">Last 2 seconds</p>
+      <canvas id="c6strip" class="h-strip" role="img" aria-label="Two-second strip of needle EMG"></canvas>
+      <p class="cap" style="margin-top:8px">Firing rate <span>each dot = one discharge</span></p>
+      <canvas id="c6rate" class="h-rate" role="img" aria-label="Instantaneous firing rate of each discharge"></canvas>
+    </div>
+    <div class="screen" id="c6info"></div>
+    <div class="tray">
+      <div class="dtype" id="c6types"></div>
+      <div class="trow">
+        <div class="sound"><button class="btn" id="c6sound" aria-pressed="false"><i></i>Sound</button></div>
+        <div class="ctl" style="flex:0 1 190px"><label for="c6vol">Volume</label><input type="range" id="c6vol" min="0" max="1" step="0.01" value="0.6"><output id="c6volo"></output></div>
+        <button class="btn" id="c6move">Move needle</button>
+        <button class="btn" id="c6mystery">Mystery</button>
+      </div>
+      <div class="trow"><span class="tlabel">Gain</span><div class="seg" id="c6gain"></div></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script src="src/model.js"></script>
+<script src="src/needle.js"></script>
+<script src="src/app.js"></script>
+</body>
+</html>
