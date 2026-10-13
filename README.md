@@ -18,7 +18,18 @@ Chapters 4 (F-waves), 7 (recruitment) and 8 (cases) are planned.
 Plain HTML, CSS and JavaScript with no build step. Open `index.html` through
 any static server, e.g. `python3 -m http.server`.
 
-`src/model.js` also runs under Node, which is handy for checking the model's
-numbers against reference values.
+## The engine
+
+`src/model.js` is a pinned copy of
+[nm-engine](https://github.com/patrick-glover/nm-engine), where the model is
+versioned, tested against published reference values, and documented
+([where the numbers come from](https://github.com/patrick-glover/nm-engine/blob/main/CALIBRATION.md)).
+Don't edit it here: change nm-engine, release a tag, then sync.
+`engine.lock.json` records the release, commit and sha256 of the copy in use.
+
+```
+node tools/sync-engine.js check --remote   # copy matches the locked release?
+node tools/sync-engine.js sync v0.1.2      # move to a newer release
+```
 
 Educational use only. Reference values are approximate; labs differ.

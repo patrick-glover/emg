@@ -2,6 +2,9 @@
    Positions are mm along the nerve, measured from the recording electrode.
    Time is ms. Motor amplitudes are mV, sensory amplitudes are µV. */
 
+/* release version: matches package.json and the git tag, so a page can show which engine it runs */
+const ENGINE_VERSION='0.1.1';
+
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);
   t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
 function gauss(rng){let u=0,v=0;while(!u)u=rng();while(!v)v=rng();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
@@ -181,4 +184,4 @@ function rnsTrain(pop,nmj,preset,S,opts={}){
   }
   return out;
 }
-if(typeof module!=='undefined')module.exports={cvOf,arrival,isDead,NERVES,makePop,freshD,respond,segCv,NMJ_PRESETS,makeNmj,nmjState,rnsTrain,mulberry32,motorShape,sensoryShape,ptp,exhaustion};
+if(typeof module!=='undefined')module.exports={ENGINE_VERSION,cvOf,arrival,isDead,NERVES,makePop,freshD,respond,segCv,NMJ_PRESETS,makeNmj,nmjState,rnsTrain,mulberry32,motorShape,sensoryShape,ptp,exhaustion};
