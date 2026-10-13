@@ -20,16 +20,11 @@ any static server, e.g. `python3 -m http.server`.
 
 ## The engine
 
-`src/model.js` is a pinned copy of
+`src/model.js` is a copy of a tagged release of
 [nm-engine](https://github.com/patrick-glover/nm-engine), where the model is
 versioned, tested against published reference values, and documented
 ([where the numbers come from](https://github.com/patrick-glover/nm-engine/blob/main/CALIBRATION.md)).
-Don't edit it here: change nm-engine, release a tag, then sync.
-`engine.lock.json` records the release, commit and sha256 of the copy in use.
-
-```
-node tools/sync-engine.js check --remote   # copy matches the locked release?
-node tools/sync-engine.js sync v0.1.2      # move to a newer release
-```
+`ENGINE_VERSION` at the top of the file says which release this is. Don't edit
+it here: change nm-engine, tag a release, then copy the new file in.
 
 Educational use only. Reference values are approximate; labs differ.

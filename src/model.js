@@ -3,7 +3,7 @@
    Time is ms. Motor amplitudes are mV, sensory amplitudes are µV. */
 
 /* release version: matches package.json and the git tag, so a page can show which engine it runs */
-const ENGINE_VERSION='0.1.1';
+const ENGINE_VERSION='0.1.2';
 
 function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);
   t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
